@@ -7,6 +7,8 @@ describe 'GET /api/v1/games/1' do
       player_2_board = Board.new(4)
       sm_ship = Ship.new(2)
       md_ship = Ship.new(3)
+      player_1 = create(:user)
+      player_2 = create(:user)
 
       ShipPlacer.new(board: player_1_board,
                      ship: sm_ship,
@@ -37,7 +39,9 @@ describe 'GET /api/v1/games/1' do
                       player_2_board: player_2_board,
                       player_1_turns: 0,
                       player_2_turns: 0,
-                      current_turn: "challenger"
+                      current_turn: "player_1",
+                      player_1_id: player_1.id,
+                      player_2_id: player_2.id
                     }
 
       game = Game.new(game_attributes)
