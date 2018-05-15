@@ -34,6 +34,18 @@ Rails.application.configure do
   # Configure MailCatcher
   config.action_mailer.smtp_settings = { :address => '127.0.0.1', :port => 1025 }
 
+  # Configure SendGrid (if not using MailCatcher settings)
+  # config.action_mailer.smtp_settings = {
+  #   :user_name => ENV['SENDGRID_USERNAME'],
+  #   :password => ENV['SENDGRID_PASSWORD'],
+  #   :domain => 'battletheshift.herokuapp.com',
+  #   :address => 'smtp.sendgrid.net',
+  #   :port => 587,
+  #   :authentication => :plain,
+  #   :enable_starttls_auto => true
+  # }
+
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
