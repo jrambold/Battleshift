@@ -14,5 +14,10 @@ Rails.application.routes.draw do
         post "/shots", to: "games/shots#create"
       end
     end
+    namespace :v2 do
+      resources :games, only: [:show] do
+        post "/shots", to: "games/shots#create"
+      end
+    end
   end
 end
