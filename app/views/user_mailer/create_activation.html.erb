@@ -1,2 +1,6 @@
-<p>Activate your account</p>
-<a href="https://battletheshift.herokuapp.com/activate/params?<%= params[:user].id %>=<%= params[:user].token %>">Activate</a>
+<p>Visit here to activate your account.</p>
+<a href="https://battletheshift.herokuapp.com/activate?id=<%= params[:user].id %>&token=<%= params[:user].token %>">Activate</a>
+<p>https://battletheshift.herokuapp.com/activate?id=<%= params[:user].id %>&token=<%= params[:user].token %></p>
+
+<p>Your API Key is</p>
+<p><%= params[:user].api_key %></p>

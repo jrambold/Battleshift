@@ -1,2 +1,5 @@
 Visit here to activate your account.
-https://battletheshift.herokuapp.com/activate/params?<%= params[:user].id %>=<%= params[:user].token %>
+https://battletheshift.herokuapp.com/activate?id=<%= params[:user].id %>&token=<%= params[:user].token %>
+
+Your API Key is
+<%= params[:user].api_key %>
