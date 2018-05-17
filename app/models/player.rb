@@ -1,5 +1,5 @@
 class Player
-  attr_reader :board, :ships
+  attr_reader :board
 
   def initialize(board)
     @board = board
@@ -15,9 +15,12 @@ class Player
     "You have #{ships.length} ship(s) to place#{check_ships}."
   end
 
-  def check_ships
-    unless ships.empty?
-      " with a size of #{ships.first}"
+  private
+    attr_reader :ships
+
+    def check_ships
+      unless ships.empty?
+        " with a size of #{ships.first}"
+      end
     end
-  end
 end
