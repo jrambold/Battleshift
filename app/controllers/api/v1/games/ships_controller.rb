@@ -12,8 +12,7 @@ module Api
                         ).run
           player_1 = Player.new(game.player_1_board)
           game.messages = ship_placement + " " + player_1.ships_remaining
-          require 'pry'; binding.pry
-          render json: game
+          render json: game, message: "#{game.messages}"
         end
       end
     end
