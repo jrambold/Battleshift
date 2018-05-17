@@ -1,8 +1,11 @@
 class TurnProcessor
+  attr_reader :status
+
   def initialize(game, target)
     @game   = game
     @target = target
     @messages = []
+    @status = 200
   end
 
   def run!
@@ -15,6 +18,7 @@ class TurnProcessor
       game.save!
     rescue InvalidAttack => e
       @messages << e.message
+      @status = 400
     end
   end
 
@@ -28,14 +32,16 @@ class TurnProcessor
 
   def attack_player_2
     result = Shooter.fire!(board: player_2.board, target: target)
-    @messages << "Your shot resulted in a #{result}."
+    @messages << "Your shot resulted in a #{result[0]}."
+    @messages << result[1]
     game.player_1_turns += 1
     game.current_turn = "player_2"
   end
 
   def attack_player_1
     result = Shooter.fire!(board: player_1.board, target: target)
-    @messages << "Your shot resulted in a #{result}."
+    @messages << "Your shot resulted in a #{result[0]}."
+    @messages << result[1]
     game.player_2_turns += 1
     game.current_turn = "player_1"
   end

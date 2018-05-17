@@ -1,4 +1,5 @@
 class Shooter
+
   def initialize(board:, target:)
     @board     = board
     @target    = target
@@ -7,7 +8,11 @@ class Shooter
 
   def fire!
     if valid_shot?
-      space.attack!
+      result = space.attack!
+      if space.contents && space.contents.is_sunk?
+        @message = "Battleship sunk."
+      end
+      [result, @message]
     else
       raise InvalidAttack.new("Invalid coordinates.")
     end
