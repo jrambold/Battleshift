@@ -11,7 +11,8 @@ module Api
                          end_space: params[:end_space]
                         ).run
           player_1 = Player.new(game.player_1_board)
-          game.messages = ship_placement+player_1.ships_remaining
+          game.messages = ship_placement + " " + player_1.ships_remaining
+          require 'pry'; binding.pry
           render json: game
         end
       end

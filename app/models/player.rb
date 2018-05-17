@@ -1,29 +1,23 @@
 class Player
-  attr_reader :board
+  attr_reader :board, :ships
 
   def initialize(board)
     @board = board
+    @ships = [2, 3]
   end
 
   def ships_remaining
-    ships_remaining = 2
-    board.each do |space|
-      if space.contents
-        if space.contents.length == 3
-          ships_remaining = 1
-        elsif space.conents.length == 2
-          ships_remaining = 0
-          break
-        end
+    board.board.each do | block |
+      block.each do | row |
+        ships.delete(row.values[0].contents.length) if row.values[0].contents
       end
     end
-    case ships_remaining
-      when 2
-        "You have 2 ship(s) to place with a size of 3 and 2."
-      when 1
-        "You have 1 ship(s) to place with a size of 2."
-      else
-        "You have 0 ship(s) to place."
+    "You have #{ships.length} ship(s) to place#{check_ships}."
+  end
+
+  def check_ships
+    unless ships.empty?
+      " with a size of #{ships.first}"
     end
   end
 end
