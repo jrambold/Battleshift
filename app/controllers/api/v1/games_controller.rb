@@ -3,7 +3,6 @@ module Api
     class GamesController < ApiController
       def create
         game = Game.start(params[:opponent_email], request.headers.env["HTTP_X_API_KEY"])
-  
         render json: game
       end
 

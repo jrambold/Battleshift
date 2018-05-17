@@ -21,8 +21,7 @@ class Game < ApplicationRecord
       player_1_id: User.find_by(api_key: user_api_key).id,
       player_2_id: User.find_by(email: opponent_email).id
     }
-    require 'pry'; binding.pry
-    Game.new(game_attributes)
+    Game.create(game_attributes)
 
   end
 end

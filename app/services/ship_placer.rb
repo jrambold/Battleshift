@@ -14,6 +14,7 @@ class ShipPlacer
     else
       raise InvalidShipPlacement.new("Ship must be in either the same row or column.")
     end
+    "Successfully placed ship with a size of #{ship.length}."
   end
 
   private
