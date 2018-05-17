@@ -4,7 +4,7 @@ module Api
       class ShipsController < ApiController
         def create
           game = Game.find(params[:game_id])
-          if game.current_turn == "player_1"
+          if game.player_1.api_key == request.headers["HTTP_X_API_KEY"]
             ship_placement = ShipPlacer.new(board: game.player_1_board,
                            ship: Ship.new(params[:ship_size]),
                            start_space: params[:start_space],
@@ -12,7 +12,7 @@ module Api
                           ).run
             player = Player.new(game.player_1_board)
             game.update(player_1_board: game.player_1_board)
-          else
+          elsif game.player_2.api_key == request.headers["HTTP_X_API_KEY"]
             ship_placement = ShipPlacer.new(board: game.player_2_board,
                            ship: Ship.new(params[:ship_size]),
                            start_space: params[:start_space],
@@ -20,6 +20,8 @@ module Api
                           ).run
             player = Player.new(game.player_2_board)
             game.update(player_1_board: game.player_2_board)
+          else
+            render json: {message: "Invalid Key"}
           end
           game.messages = ship_placement + " " + player.ships_remaining
           render json: game, message: "#{game.messages}"
