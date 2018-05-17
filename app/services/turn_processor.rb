@@ -35,6 +35,9 @@ class TurnProcessor
     @messages << "Your shot resulted in a #{result[0]}."
     @messages << result[1]
     game.player_1_turns += 1
+    if result[2]
+      game.winner = game.player_1.id
+    end
     game.current_turn = "player_2"
   end
 
@@ -42,6 +45,9 @@ class TurnProcessor
     result = Shooter.fire!(board: player_1.board, target: target)
     @messages << "Your shot resulted in a #{result[0]}."
     @messages << result[1]
+    if result[2]
+      game.winner = game.player_2.id
+    end
     game.player_2_turns += 1
     game.current_turn = "player_1"
   end

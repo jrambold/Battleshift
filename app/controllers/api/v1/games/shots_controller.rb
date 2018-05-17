@@ -4,12 +4,15 @@ module Api
       class ShotsController < ApiController
         def create
           game = Game.find(params[:game_id])
-          if game.player_1.api_key == request.headers["HTTP_X_API_KEY"]  && game.current_turn == "player_1"
+          if game.winner
+            render json: game, message: "Invalid move. Game over.", status: 400
+          elsif game.player_1.api_key == request.headers["HTTP_X_API_KEY"]  && game.current_turn == "player_1"
 
             turn_processor = TurnProcessor.new(game, params[:shot][:target])
 
             turn_processor.run!
             render json: game, message: turn_processor.message, status: turn_processor.status
+
           elsif game.player_2.api_key == request.headers["HTTP_X_API_KEY"] && game.current_turn == "player_2"
             game.player_1.api_key == request.headers["HTTP_X_API_KEY"]
 
