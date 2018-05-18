@@ -67,13 +67,8 @@ describe "Api::V1::Shots" do
       expect(game_info[:message]).to eq "Invalid coordinates."
     end
 
-
-    it "updates the message and board with a hit for both player_1" do
+    it "updates the message and board with a hit for player_1" do
       # allow_any_instance_of(AiSpaceSelector).to receive(:fire!).and_return("Miss")
-      ShipPlacer.new(board: player_1_board,
-                    ship: sm_ship,
-                    start_space: "A1",
-                    end_space: "A2").run
       ShipPlacer.new(board: player_2_board,
                      ship: sm_ship,
                      start_space: "A1",
@@ -94,15 +89,11 @@ describe "Api::V1::Shots" do
       expect(player_1_targeted_space).to eq("Hit")
     end
 
-    it "updates the message and board with a hit for both player_1" do
+    it "updates the message and board with a hit for player_2" do
       ShipPlacer.new(board: player_1_board,
                     ship: sm_ship,
                     start_space: "A1",
                     end_space: "A2").run
-      ShipPlacer.new(board: player_2_board,
-                     ship: sm_ship,
-                     start_space: "A1",
-                     end_space: "A2").run
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board, current_turn: "player_2")
       headers = { "CONTENT_TYPE" => "application/json" }
       json_payload = {target: "A1"}.to_json
@@ -120,7 +111,7 @@ describe "Api::V1::Shots" do
       expect(player_2_targeted_space).to eq("Hit")
     end
 
-    it "updates the message and board when player_1 sinks a ship" do
+    it "updates the message when player_1 sinks one but not all of opponents ships" do
       # allow_any_instance_of(AiSpaceSelector).to receive(:fire!).and_return("Miss")
       ship = Ship.new(1)
       ShipPlacer.new(board: player_2_board,
@@ -145,7 +136,7 @@ describe "Api::V1::Shots" do
       expect(game_info[:message]).to eq expected_messages
     end
 
-    it "updates the message and board when player_2 sinks a ship" do
+    it "updates the message when player_2 sinks one but not all of opponents ships" do
       # allow_any_instance_of(AiSpaceSelector).to receive(:fire!).and_return("Miss")
       ship = Ship.new(1)
       ShipPlacer.new(board: player_1_board,
@@ -212,7 +203,7 @@ describe "Api::V1::Shots" do
       expect(game_info[:message]).to eq expected_messages
     end
 
-    it "updates the message and board when player_1 tries to take a turn on a game that has been completed" do
+    it "updates the message when player_1 tries to take a turn on a game that has been completed" do
       # allow_any_instance_of(AiSpaceSelector).to receive(:fire!).and_return("Miss")
       ship = Ship.new(1)
       ShipPlacer.new(board: player_2_board,
@@ -232,7 +223,7 @@ describe "Api::V1::Shots" do
       expect(game_info[:message]).to eq expected_messages
     end
 
-    it "updates the message and board when player_2 tries to take a turn on a game that has been completed" do
+    it "updates the message when player_2 tries to take a turn on a game that has been completed" do
       # allow_any_instance_of(AiSpaceSelector).to receive(:fire!).and_return("Miss")
       ship = Ship.new(1)
       ShipPlacer.new(board: player_1_board,
