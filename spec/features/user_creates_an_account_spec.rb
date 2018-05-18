@@ -12,7 +12,7 @@ describe 'User' do
   end
 
   describe 'fills out a registration form' do
-    it 'and it creates an account' do
+    it 'and it creates an account with all input fields completed properly' do
       visit '/register'
 
       fill_in 'user[email]', with: 'email@example.com'
@@ -43,7 +43,17 @@ describe 'User' do
       expect(email.text_part.body.to_s).to have_content(user.token)
       expect(email.html_part.body.to_s).to have_content(user.api_key)
       expect(email.text_part.body.to_s).to have_content(user.api_key)
+    end
 
+    it 'and it fails to create an account if all input fields are not completed properly' do
+      visit '/register'
+
+      fill_in 'user[email]', with: 'email@example.com'
+      fill_in 'user[password_confirmation]', with: 'password'
+      click_on 'Create User'
+
+      expect(current_path).to eq('/register')
+      expect(page).to have_content("Failed to create a new account")
     end
   end
 end
