@@ -63,6 +63,30 @@ describe 'GET /api/v1/games/1' do
       expect(actual[:player_1_board][:rows][3][:data][0][:status]).to eq("Not Attacked")
     end
   end
+  context 'without an existing game' do
+    # Game.start(params[:opponent_email], request.headers.env["HTTP_X_API_KEY"])
+    it 'can create a game' do
+      user = User.create(email: 'asdf@asdf.com', username: 'asdf', password: 'asdf')
+      user.set_keys
+      user.save
+      opponent = User.create(email: 'qwer@qwer.com', username: 'qwer', password: 'qwer')
+      opponent.set_keys
+      opponent.save
+      json_payload = {opponent_email: "qwer@qwer.com"}.to_json
+      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => user.api_key }
+
+      post '/api/v1/games', params: json_payload, headers: headers
+
+      game = Game.last
+      
+      expect(game.player_1.id).to eq(user.id)
+      expect(game.player_2.id).to eq(opponent.id)
+
+      get "/api/v1/games/#{game.id}"
+
+      expect(response).to be_success
+    end
+  end
 
   describe 'with no game' do
     it 'returns a 400' do
