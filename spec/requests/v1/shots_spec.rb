@@ -9,7 +9,6 @@ describe "Api::V1::Shots" do
     let(:sm_ship) { Ship.new(2) }
 
     it "updates the message and board with a miss for player_1" do
-      # allow_any_instance_of(AiSpaceSelector).to receive(:fire!).and_return("Miss")
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
       json_payload = {target: "A1"}.to_json
       post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_1_header
