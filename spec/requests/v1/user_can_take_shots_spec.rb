@@ -116,7 +116,6 @@ describe "Api::V1::Shots" do
                      start_space: "A2",
                      end_space: "A2").run
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
-      headers = { "CONTENT_TYPE" => "application/json" }
       json_payload = {target: "A1"}.to_json
 
       post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_1_header
@@ -140,7 +139,6 @@ describe "Api::V1::Shots" do
                      start_space: "A2",
                      end_space: "A2").run
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board, current_turn: "player_2")
-      headers = { "CONTENT_TYPE" => "application/json" }
       json_payload = {target: "A1"}.to_json
 
       post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_2_header
@@ -160,7 +158,6 @@ describe "Api::V1::Shots" do
                      start_space: "A1",
                      end_space: "A1").run
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
-      headers = { "CONTENT_TYPE" => "application/json" }
       json_payload = {target: "A1"}.to_json
 
       post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_1_header
@@ -180,7 +177,6 @@ describe "Api::V1::Shots" do
                      start_space: "A1",
                      end_space: "A1").run
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board, current_turn: "player_2")
-      headers = { "CONTENT_TYPE" => "application/json" }
       json_payload = {target: "A1"}.to_json
 
       post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_2_header
@@ -200,7 +196,6 @@ describe "Api::V1::Shots" do
                      start_space: "A1",
                      end_space: "A1").run
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
-      headers = { "CONTENT_TYPE" => "application/json" }
       json_payload = {target: "A1"}.to_json
 
       post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_1_header
@@ -219,7 +214,6 @@ describe "Api::V1::Shots" do
                      start_space: "A1",
                      end_space: "A1").run
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board, current_turn: "player_2")
-      headers = { "CONTENT_TYPE" => "application/json" }
       json_payload = {target: "A1"}.to_json
 
       post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_2_header
@@ -229,6 +223,26 @@ describe "Api::V1::Shots" do
 
       expected_messages = "Invalid move. Game over."
       expect(game_info[:message]).to eq expected_messages
+    end
+
+    it "updates the message when user tries to play a game that they are not a part of" do
+      ship = Ship.new(1)
+      ShipPlacer.new(board: player_1_board,
+                     ship: ship,
+                     start_space: "A1",
+                     end_space: "A1").run
+      game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board, current_turn: "player_2")
+      unauthorized_user = create(:user)
+      unauthorized_user_header = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => unauthorized_user.api_key }
+      json_payload = {target: "A1"}.to_json
+
+      post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: unauthorized_user_header
+
+      game_info = JSON.parse(response.body, symbolize_names: true)
+
+      expected_messages = "Unauthorized"
+      expect(game_info[:message]).to eq expected_messages
+      expect(response.status).to eq(401)
     end
   end
 end
