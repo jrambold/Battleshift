@@ -1,11 +1,25 @@
 class TurnProcessor
   attr_reader :status
 
-  def initialize(game, target)
-    @game   = game
+  def initialize(game, user, target)
+    @game = game
+    @user = user
     @target = target
     @messages = []
     @status = 200
+  end
+
+  def authorized?
+    if game.winner
+      return game_over
+    elsif user.nil? || [game.player_1, game.player_2].exclude?(user)
+      return unauthorized_move
+    elsif game.current_turn == "player_1" && user != game.player_1
+      return invalid_move
+    elsif game.current_turn == "player_2" && user != game.player_2
+      return invalid_move
+    end
+    true
   end
 
   def run!
@@ -28,36 +42,53 @@ class TurnProcessor
 
   private
 
-  attr_reader :game, :target
+    attr_reader :game, :user, :target
 
-  def attack_player_2
-    result = Shooter.fire!(board: player_2.board, target: target)
-    @messages << "Your shot resulted in a #{result[0]}."
-    @messages << result[1]
-    game.player_1_turns += 1
-    if result[2]
-      game.winner = game.player_1.id
+    def attack_player_2
+      result = Shooter.fire!(board: player_2.board, target: target)
+      @messages << "Your shot resulted in a #{result[0]}."
+      @messages << result[1]
+      game.player_1_turns += 1
+      if result[2]
+        game.winner = game.player_1.id
+      end
+      game.current_turn = "player_2"
     end
-    game.current_turn = "player_2"
-  end
 
-  def attack_player_1
-    result = Shooter.fire!(board: player_1.board, target: target)
-    @messages << "Your shot resulted in a #{result[0]}."
-    @messages << result[1]
-    if result[2]
-      game.winner = game.player_2.id
+    def attack_player_1
+      result = Shooter.fire!(board: player_1.board, target: target)
+      @messages << "Your shot resulted in a #{result[0]}."
+      @messages << result[1]
+      if result[2]
+        game.winner = game.player_2.id
+      end
+      game.player_2_turns += 1
+      game.current_turn = "player_1"
     end
-    game.player_2_turns += 1
-    game.current_turn = "player_1"
-  end
 
-  def player_1
-    Player.new(game.player_1_board)
-  end
+    def invalid_move
+      @status = 400
+      @messages << "Invalid move. It's your opponent's turn"
+      false
+    end
 
-  def player_2
-    Player.new(game.player_2_board)
-  end
+    def unauthorized_move
+      @status = 401
+      @messages << "Unauthorized"
+      false
+    end
 
+    def game_over
+      @status = 400
+      @messages << "Invalid move. Game over."
+      false
+    end
+
+    def player_1
+      Player.new(game.player_1_board)
+    end
+
+    def player_2
+      Player.new(game.player_2_board)
+    end
 end
