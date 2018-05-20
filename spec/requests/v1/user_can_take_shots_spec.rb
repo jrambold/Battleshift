@@ -20,6 +20,7 @@ describe "Api::V1::Shots" do
       expected_messages = "Your shot resulted in a Miss. "
       player_1_targeted_space = game_info[:player_2_board][:rows].first[:data].first[:status]
 
+      expect(response.status).to eq(200)
       expect(game_info[:message]).to eq expected_messages
       expect(player_1_targeted_space).to eq("Miss")
     end
@@ -36,6 +37,7 @@ describe "Api::V1::Shots" do
       expected_messages = "Your shot resulted in a Miss. "
       player_2_targeted_space = game_info[:player_1_board][:rows].first[:data].first[:status]
 
+      expect(response.status).to eq(200)
       expect(game_info[:message]).to eq expected_messages
       expect(player_2_targeted_space).to eq("Miss")
     end
@@ -49,6 +51,8 @@ describe "Api::V1::Shots" do
       post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_1_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(400)
       expect(game_info[:message]).to eq "Invalid coordinates."
     end
 
@@ -61,6 +65,8 @@ describe "Api::V1::Shots" do
       post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_2_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(400)
       expect(game_info[:message]).to eq "Invalid coordinates."
     end
 
@@ -80,6 +86,7 @@ describe "Api::V1::Shots" do
       expected_messages = "Your shot resulted in a Hit. "
       player_1_targeted_space = game_info[:player_2_board][:rows].first[:data].first[:status]
 
+      expect(response.status).to eq(200)
       expect(game_info[:message]).to eq expected_messages
       expect(player_1_targeted_space).to eq("Hit")
     end
@@ -101,6 +108,7 @@ describe "Api::V1::Shots" do
       expected_messages = "Your shot resulted in a Hit. "
       player_2_targeted_space = game_info[:player_1_board][:rows].first[:data].first[:status]
 
+      expect(response.status).to eq(200)
       expect(game_info[:message]).to eq expected_messages
       expect(player_2_targeted_space).to eq("Hit")
     end
@@ -124,6 +132,7 @@ describe "Api::V1::Shots" do
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
+      expect(response.status).to eq(200)
       expected_messages = "Your shot resulted in a Hit. Battleship sunk."
       expect(game_info[:message]).to eq expected_messages
     end
@@ -147,6 +156,7 @@ describe "Api::V1::Shots" do
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
+      expect(response.status).to eq(200)
       expected_messages = "Your shot resulted in a Hit. Battleship sunk."
       expect(game_info[:message]).to eq expected_messages
     end
@@ -166,6 +176,7 @@ describe "Api::V1::Shots" do
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
+      expect(response.status).to eq(200)
       expected_messages = "Your shot resulted in a Hit. Battleship sunk. Game over."
       expect(game_info[:message]).to eq expected_messages
     end
@@ -185,6 +196,7 @@ describe "Api::V1::Shots" do
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
+      expect(response.status).to eq(200)
       expected_messages = "Your shot resulted in a Hit. Battleship sunk. Game over."
       expect(game_info[:message]).to eq expected_messages
     end
@@ -203,6 +215,7 @@ describe "Api::V1::Shots" do
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
+      expect(response.status).to eq(400)
       expected_messages = "Invalid move. Game over."
       expect(game_info[:message]).to eq expected_messages
     end
@@ -221,7 +234,44 @@ describe "Api::V1::Shots" do
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
+      expect(response.status).to eq(400)
       expected_messages = "Invalid move. Game over."
+      expect(game_info[:message]).to eq expected_messages
+    end
+
+    it "updates the message when player_2 tries to shoot when it's player_1s turn" do
+      ship = Ship.new(1)
+      ShipPlacer.new(board: player_2_board,
+        ship: ship,
+        start_space: "A1",
+        end_space: "A1").run
+        game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
+        json_payload = {target: "A1"}.to_json
+
+        post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_2_header
+
+        game_info = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response.status).to eq(400)
+        expected_messages = "Invalid move. It's your opponent's turn"
+        expect(game_info[:message]).to eq expected_messages
+      end
+
+    it "updates the message when player_1 tries to shoot when it's player_2s turn" do
+      ship = Ship.new(1)
+      ShipPlacer.new(board: player_2_board,
+                     ship: ship,
+                     start_space: "A1",
+                     end_space: "A1").run
+      game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board, current_turn: "player_2")
+      json_payload = {target: "A1"}.to_json
+
+      post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_1_header
+
+      game_info = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(400)
+      expected_messages = "Invalid move. It's your opponent's turn"
       expect(game_info[:message]).to eq expected_messages
     end
 
@@ -240,9 +290,9 @@ describe "Api::V1::Shots" do
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
+      expect(response.status).to eq(401)
       expected_messages = "Unauthorized"
       expect(game_info[:message]).to eq expected_messages
-      expect(response.status).to eq(401)
     end
   end
 end
