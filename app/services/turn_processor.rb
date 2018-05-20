@@ -14,10 +14,12 @@ class TurnProcessor
       return game_over
     elsif user.nil? || [game.player_1, game.player_2].exclude?(user)
       return unauthorized_move
-    elsif user != game.player_1 && user != game.player_2
-      return invalid_move
+    elsif game.current_turn == "player_1" && user != game.player_1
+      return invalid_turn
+    elsif game.current_turn == "player_2" && user != game.player_2
+      return invalid_turn
     end
-    true
+    return true
   end
 
   def run!
@@ -64,7 +66,7 @@ class TurnProcessor
       game.current_turn = "player_1"
     end
 
-    def invalid_move
+    def invalid_turn
       @status = 400
       @messages << "Invalid move. It's your opponent's turn"
       false
