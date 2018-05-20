@@ -229,7 +229,7 @@ describe "Api::V1::Ships" do
       expect(message).to eq("Ship must be in either the same row or column.")
     end
 
-    it 'raises error when player_1 attempts to place a ship out of turn' do
+    xit 'raises error when player_1 attempts to place a ship out of turn' do
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board, current_turn: "player_2")
       ship_1_payload = {
         ship_size: 3,
@@ -247,7 +247,7 @@ describe "Api::V1::Ships" do
       expect(game_info[:message]).to eq("Invalid key")
     end
 
-    it 'raises error when player_2 attempts to place a ship out of turn' do
+    xit 'raises error when player_2 attempts to place a ship out of turn' do
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
       ship_1_payload = {
         ship_size: 3,
