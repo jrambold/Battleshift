@@ -14,9 +14,7 @@ class TurnProcessor
       return game_over
     elsif user.nil? || [game.player_1, game.player_2].exclude?(user)
       return unauthorized_move
-    elsif game.current_turn == "player_1" && user != game.player_1
-      return invalid_move
-    elsif game.current_turn == "player_2" && user != game.player_2
+    elsif user != game.player_1 && user != game.player_2
       return invalid_move
     end
     true
