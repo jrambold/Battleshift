@@ -21,7 +21,7 @@ module Api
             player = Player.new(game.player_2_board)
             game.update(player_1_board: game.player_2_board)
           else
-            render json: {message: "Invalid Key"}
+            render json: game, message: "Invalid key", status: 400
           end
           message = ship_placement + " " + player.ships_remaining
           render json: game, message: "#{message}"

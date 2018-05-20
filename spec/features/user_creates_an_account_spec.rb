@@ -40,9 +40,7 @@ describe 'User' do
 
       expect(email.subject).to eq('Activate your account')
       expect(email.html_part.body.to_s).to have_content(user.token)
-      expect(email.text_part.body.to_s).to have_content(user.token)
       expect(email.html_part.body.to_s).to have_content(user.api_key)
-      expect(email.text_part.body.to_s).to have_content(user.api_key)
     end
 
     it 'and it fails to create an account if all input fields are not completed properly' do
