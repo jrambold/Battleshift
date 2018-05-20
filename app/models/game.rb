@@ -1,6 +1,4 @@
 class Game < ApplicationRecord
-  attr_accessor :messages
-
   enum current_turn: ["player_1", "player_2"]
   serialize :player_1_board
   serialize :player_2_board
@@ -22,6 +20,5 @@ class Game < ApplicationRecord
       player_2_id: User.find_by(email: opponent_email).id
     }
     Game.create(game_attributes)
-
   end
 end

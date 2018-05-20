@@ -23,8 +23,8 @@ module Api
           else
             render json: {message: "Invalid Key"}
           end
-          game.messages = ship_placement + " " + player.ships_remaining
-          render json: game, message: "#{game.messages}"
+          message = ship_placement + " " + player.ships_remaining
+          render json: game, message: "#{message}"
         end
       end
     end
