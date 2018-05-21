@@ -78,13 +78,39 @@ describe 'GET /api/v1/games/1' do
       post '/api/v1/games', params: json_payload, headers: headers
 
       game = Game.last
-      
+
       expect(game.player_1.id).to eq(user.id)
       expect(game.player_2.id).to eq(opponent.id)
 
       get "/api/v1/games/#{game.id}"
 
       expect(response).to be_success
+    end
+    it 'cannot create a 2nd game' do
+      user = User.create(email: 'asdf@asdf.com', username: 'asdf', password: 'asdf')
+      user.set_keys
+      user.save
+      opponent = User.create(email: 'qwer@qwer.com', username: 'qwer', password: 'qwer')
+      opponent.set_keys
+      opponent.save
+      json_payload = {opponent_email: "qwer@qwer.com"}.to_json
+      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => user.api_key }
+
+      post '/api/v1/games', params: json_payload, headers: headers
+
+      post '/api/v1/games', params: json_payload, headers: headers
+
+      expect(response.status).to be(400)
+      game_info = JSON.parse(response.body, symbolize_names: true)
+      expect(game_info[:message]).to eq("Game 1 Already Started")
+
+      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => opponent.api_key }
+      json_payload = {opponent_email: "asdf@asdf.com"}.to_json
+      post '/api/v1/games', params: json_payload, headers: headers
+
+      expect(response.status).to be(400)
+      game_info = JSON.parse(response.body, symbolize_names: true)
+      expect(game_info[:message]).to eq("Game 1 Already Started")
     end
   end
 
