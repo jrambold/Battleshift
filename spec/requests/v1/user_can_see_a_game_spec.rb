@@ -103,6 +103,14 @@ describe 'GET /api/v1/games/1' do
       expect(response.status).to be(400)
       game_info = JSON.parse(response.body, symbolize_names: true)
       expect(game_info[:message]).to eq("Game 1 Already Started")
+
+      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => opponent.api_key }
+      json_payload = {opponent_email: "asdf@asdf.com"}.to_json
+      post '/api/v1/games', params: json_payload, headers: headers
+
+      expect(response.status).to be(400)
+      game_info = JSON.parse(response.body, symbolize_names: true)
+      expect(game_info[:message]).to eq("Game 1 Already Started")
     end
   end
 
