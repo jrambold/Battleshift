@@ -6,6 +6,7 @@ describe "Api::V1::Ships" do
     let(:player_2_board)   { Board.new(4) }
     let(:player_1_header) { { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "abc" } }
     let(:player_2_header) { { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "def" } }
+    let(:player_bad_header) { { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "jkl" } }
 
     it 'can place a ship for player 1' do
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
@@ -215,36 +216,21 @@ describe "Api::V1::Ships" do
       expect(message).to eq("Ship must be in either the same row or column.")
     end
 
-    xit 'raises error when player_1 attempts to place a ship out of turn' do
-      game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board, current_turn: "player_2")
-      ship_1_payload = {
-        ship_size: 3,
-        start_space: "A1",
-        end_space: "C4"
-      }.to_json
-
-      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_2_header
-
-      game_info = JSON.parse(response.body, symbolize_names: true)
-
-      expect(response.status).to eq(400)
-      expect(game_info[:message]).to eq("Invalid key")
-    end
-
-    xit 'raises error when player_2 attempts to place a ship out of turn' do
+    it 'cannot place a ship with an invalid api key' do
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
       ship_1_payload = {
         ship_size: 3,
         start_space: "A1",
-        end_space: "C4"
+        end_space: "A3"
       }.to_json
 
-      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_1_header
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_bad_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
       expect(response.status).to eq(400)
       expect(game_info[:message]).to eq("Invalid key")
     end
+
   end
 end
