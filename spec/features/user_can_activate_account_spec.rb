@@ -20,7 +20,7 @@ describe 'User' do
       expect(User.last.active).to be_truthy
 
     end
-    it 'does not it activate for bad token' do
+    it 'does not activate with bad token' do
       visit '/register'
 
       fill_in 'user[email]', with: 'email@example.com'

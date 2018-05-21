@@ -4,6 +4,8 @@ describe "Api::V1::Ships" do
   context "POST /api/v1/games/:id/ships" do
     let(:player_1_board)   { Board.new(4) }
     let(:player_2_board)   { Board.new(4) }
+    let(:player_1_header) { { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "abc" } }
+    let(:player_2_header) { { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "def" } }
 
     it 'can place a ship for player 1' do
       game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
@@ -13,8 +15,7 @@ describe "Api::V1::Ships" do
         end_space: "A3"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "abc" }
-      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_1_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
@@ -30,8 +31,7 @@ describe "Api::V1::Ships" do
         end_space: "A3"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "def" }
-      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_2_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
@@ -52,15 +52,14 @@ describe "Api::V1::Ships" do
         end_space: "B2"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "abc" }
-      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_1_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
       expect(response.status).to eq(200)
       expect(game_info[:message]).to eq("Successfully placed ship with a size of 3. You have 1 ship(s) to place with a size of 2.")
 
-      post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: headers
+      post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: player_1_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
@@ -81,15 +80,14 @@ describe "Api::V1::Ships" do
         end_space: "B2"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "def" }
-      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_2_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
       expect(response.status).to eq(200)
       expect(game_info[:message]).to eq("Successfully placed ship with a size of 3. You have 1 ship(s) to place with a size of 2.")
 
-      post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: headers
+      post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: player_2_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
@@ -110,11 +108,9 @@ describe "Api::V1::Ships" do
         end_space: "A2"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "abc" }
-
       begin
-        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
-        post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: headers
+        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_1_header
+        post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: player_1_header
         rescue InvalidShipPlacement => e
           message = e.message
       end
@@ -136,11 +132,9 @@ describe "Api::V1::Ships" do
         end_space: "A2"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "def" }
-
       begin
-        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
-        post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: headers
+        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_2_header
+        post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: player_2_header
         rescue InvalidShipPlacement => e
           message = e.message
       end
@@ -157,10 +151,8 @@ describe "Api::V1::Ships" do
         end_space: "A4"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "abc" }
-
       begin
-        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_1_header
         rescue InvalidShipPlacement => e
           message = e.message
       end
@@ -177,10 +169,8 @@ describe "Api::V1::Ships" do
         end_space: "A4"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "def" }
-
       begin
-        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_2_header
         rescue InvalidShipPlacement => e
           message = e.message
       end
@@ -197,10 +187,8 @@ describe "Api::V1::Ships" do
         end_space: "C4"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "abc" }
-
       begin
-        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_1_header
         rescue InvalidShipPlacement => e
           message = e.message
       end
@@ -217,10 +205,8 @@ describe "Api::V1::Ships" do
         end_space: "C4"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "def" }
-
       begin
-        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+        post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_2_header
         rescue InvalidShipPlacement => e
           message = e.message
       end
@@ -237,9 +223,7 @@ describe "Api::V1::Ships" do
         end_space: "C4"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "abc" }
-
-      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_2_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
@@ -255,9 +239,7 @@ describe "Api::V1::Ships" do
         end_space: "C4"
       }.to_json
 
-      headers = { "CONTENT_TYPE" => "application/json", "HTTP_X_API_KEY" => "def" }
-
-      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: headers
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_1_header
 
       game_info = JSON.parse(response.body, symbolize_names: true)
 
