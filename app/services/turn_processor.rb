@@ -10,10 +10,10 @@ class TurnProcessor
   end
 
   def authorized?
-    if game.winner
-      return game_over
-    elsif user.nil? || [game.player_1, game.player_2].exclude?(user)
+    if user.nil? || [game.player_1, game.player_2].exclude?(user)
       return unauthorized_move
+    elsif game.winner
+      return game_over  
     elsif game.current_turn == "player_1" && user != game.player_1
       return invalid_turn
     elsif game.current_turn == "player_2" && user != game.player_2
