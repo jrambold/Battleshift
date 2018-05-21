@@ -19,6 +19,23 @@ class Game < ApplicationRecord
       player_1_id: User.find_by(api_key: user_api_key).id,
       player_2_id: User.find_by(email: opponent_email).id
     }
+    raise InvalidGameCreation if game_in_progress?(game_attributes[:player_1_id], game_attributes[:player_2_id])
     Game.create(game_attributes)
+  end
+
+  private
+    def self.game_in_progress?(user_1_id, user_2_id)
+      game = Game.find_by(player_1_id: user_1_id, player_2_id: user_2_id)
+      if game && game.winner.nil?
+        return true
+      else
+        return nil
+      end
+    end
+end
+
+class InvalidGameCreation < StandardError
+  def initialize(msg = "Two users can only have one game in progress at a time.")
+    super
   end
 end
