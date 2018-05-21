@@ -5,7 +5,7 @@ module Api
         def create
           game = Game.find(params[:game_id])
           if game.player_1_turns > 0 || game.player_2_turns > 0
-            render json: game, message: "Game In Progress", status: 400
+            render json: game, message: "Game in Progress", status: 400
           elsif game.player_1.api_key == request.headers["HTTP_X_API_KEY"]
             ship_placement = ShipPlacer.new(board: game.player_1_board,
                            ship: Ship.new(params[:ship_size]),

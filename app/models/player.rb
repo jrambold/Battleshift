@@ -15,6 +15,15 @@ class Player
     "You have #{ships.length} ship(s) to place#{check_ships}."
   end
 
+  def ships_count_remaining
+    board.board.each do | block |
+      block.each do | row |
+        ships.delete(row.values[0].contents.length) if row.values[0].contents
+      end
+    end
+    ships.length
+  end
+
   private
     attr_reader :ships
 

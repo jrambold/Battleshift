@@ -232,5 +232,34 @@ describe "Api::V1::Ships" do
       expect(game_info[:message]).to eq("Invalid key")
     end
 
+    it 'cannot place a ship after game starts' do
+      game = create(:game, player_1_board: player_1_board, player_2_board: player_2_board)
+      ship_1_payload = {
+        ship_size: 3,
+        start_space: "A1",
+        end_space: "A3"
+      }.to_json
+      ship_2_payload = {
+        ship_size: 2,
+        start_space: "B1",
+        end_space: "B2"
+      }.to_json
+
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_1_header
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_2_header
+
+      post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: player_1_header
+      post "/api/v1/games/#{game.id}/ships", params: ship_2_payload, headers: player_2_header
+
+      json_payload = {target: "A1"}.to_json
+      post "/api/v1/games/#{game.id}/shots", params: json_payload, headers: player_1_header
+
+      post "/api/v1/games/#{game.id}/ships", params: ship_1_payload, headers: player_1_header
+      game_info = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(400)
+      expect(game_info[:message]).to eq("Game in Progress")
+    end
+
   end
 end
