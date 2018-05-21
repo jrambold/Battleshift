@@ -13,9 +13,8 @@ RSpec.describe User, type: :model do
 
   describe 'class methods' do
     describe '#set_keys and #generate_keys' do
+      let(:user) { User.new(username: 'username', email: 'email@email.com', password: 'password') }
       it 'generate an api key (in combination)' do
-        user = User.new(username: 'username', email: 'email@email.com', password: 'password')
-
         expect(user.api_key).to be_nil
 
         user.set_keys
@@ -23,8 +22,6 @@ RSpec.describe User, type: :model do
         expect(user.api_key).to_not be_nil
       end
       it 'generate a token (in combination)' do
-        user = User.new(username: 'username', email: 'email@email.com', password: 'password')
-
         expect(user.token).to be_nil
 
         user.set_keys
@@ -33,8 +30,8 @@ RSpec.describe User, type: :model do
       end
     end
     describe 'activate' do
+      let(:user) { User.new(username: 'username', email: 'email@email.com', password: 'password') }
       it 'user can be actitivated with token' do
-        user = User.new(username: 'username', email: 'email@email.com', password: 'password')
         user.set_keys
         user.save!
 
